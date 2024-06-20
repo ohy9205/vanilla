@@ -1,5 +1,5 @@
 {
-  let countTime = 10;
+  let countTime = 5;
   const NOTIFICATION_TEXT = {
     active: `🕖 ${countTime}초 구경하면 보상을 받아요`, // default값
     pause: "⬇️ 스크롤해야 시간이 줄어요",
@@ -20,16 +20,15 @@
     // 관찰자 설정
     const intersectCallback = (
       entries, // IntersectionObserverEntry 인스턴스 배열
-      observer // 콜백 실행되는 해당 인스턴스
+      observer // 콜백 실행되는 해당 인스턴스,
     ) => {
       // 관찰요소가 교차되는지 판별
       if (entries[0].isIntersecting) {
         // 데이터 추가
         for (let i = 0; i < 5; i++) {
           const curIndex = Number($listLastItem.textContent) + i + 1;
-          const $newListItem = makeElement("li", "list-item");
+          const $newListItem = makeElement("li", "list-item", curIndex);
           $newListItem.setAttribute("data-index", curIndex);
-          $newListItem.textContent = curIndex;
 
           $list.append($newListItem);
         }
@@ -71,6 +70,7 @@
 
     // type3. 타이머완료
     const timerCompleted = () => {
+      notificationMode = "done";
       $notification.textContent = NOTIFICATION_TEXT.done;
       $notification.classList.add("done");
       $main.removeEventListener("scroll", scrollCallback);
@@ -98,13 +98,14 @@
   });
 }
 
-const makeElement = (tag, classList) => {
+const makeElement = (tag, classList, text) => {
   const $elem = document.createElement(tag);
   if (Array.isArray(classList)) {
     $elem.classList.add(...classList);
   } else {
     $elem.classList.add(classList);
   }
+  $elem.textContent = text;
   return $elem;
 };
 
