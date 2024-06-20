@@ -1,5 +1,5 @@
 {
-  const COUNT_TIME = 3;
+  const COUNT_TIME = 10;
   const NOTIFICATION_TEXT = {
     active: `🕖 ${COUNT_TIME}초 구경하면 보상을 받아요`, // default값
     pause: "⬇️ 스크롤해야 시간이 줄어요",
@@ -18,6 +18,7 @@
     let $listLastItem = $list.lastElementChild;
 
     let updatedTime = COUNT_TIME;
+    let observeElem = $listLastItem;
 
     // 1. 무한스크롤 (5개씩)
     // 관찰자 설정
@@ -37,6 +38,7 @@
           $list.append($newListItem);
         }
         $listLastItem = $list.lastElementChild;
+        observeElem = $list.lastElementChild;
       }
     };
     const intersectOptions = {
@@ -70,17 +72,18 @@
       notificationMode = "pause";
       $notification.textContent = NOTIFICATION_TEXT.pause;
     };
+    const debounceScrollendCallback = debounce(scrollendCallback, 2000);
 
     // type3. 타이머완료
     const timerCompleted = () => {
       $notification.textContent = NOTIFICATION_TEXT.done;
       $notification.classList.add("done");
       $main.removeEventListener("scroll", scrollCallback);
-      $main.removeEventListener("scrollend", scrollendCallback);
+      $main.removeEventListener("scroll", debounceScrollendCallback);
     };
 
     $main.addEventListener("scroll", scrollCallback);
-    $main.addEventListener("scrollend", scrollendCallback);
+    $main.addEventListener("scroll", debounceScrollendCallback);
 
     let curCount = 0;
     const timer = setInterval(() => {
@@ -110,8 +113,12 @@ const makeElement = (tag, classList) => {
   return $elem;
 };
 
-const startTimer = (timer, callback) => {
-  return setInterval(() => {
-    callback();
-  }, timer);
+const debounce = (callback, delay) => {
+  let timerId;
+  return (event) => {
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+    timerId = setTimeout(callback, delay, event);
+  };
 };
