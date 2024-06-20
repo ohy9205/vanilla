@@ -1,7 +1,7 @@
 {
-  const COUNT_TIME = 10;
+  let countTime = 10;
   const NOTIFICATION_TEXT = {
-    active: `🕖 ${COUNT_TIME}초 구경하면 보상을 받아요`, // default값
+    active: `🕖 ${countTime}초 구경하면 보상을 받아요`, // default값
     pause: "⬇️ 스크롤해야 시간이 줄어요",
     done: "🎉 리워드가 지급되었어요",
   };
@@ -14,11 +14,7 @@
 
     $notification.textContent = NOTIFICATION_TEXT.active;
     let notificationMode = undefined;
-
     let $listLastItem = $list.lastElementChild;
-
-    let updatedTime = COUNT_TIME;
-    let observeElem = $listLastItem;
 
     // 1. 무한스크롤 (5개씩)
     // 관찰자 설정
@@ -38,7 +34,6 @@
           $list.append($newListItem);
         }
         $listLastItem = $list.lastElementChild;
-        observeElem = $list.lastElementChild;
       }
     };
     const intersectOptions = {
@@ -91,10 +86,10 @@
         $notification.textContent = NOTIFICATION_TEXT.pause;
       } else if (notificationMode === "active") {
         NOTIFICATION_TEXT.active = NOTIFICATION_TEXT.active.replace(
-          updatedTime,
-          --updatedTime
+          countTime,
+          --countTime
         );
-        if (updatedTime <= 0) {
+        if (countTime <= 0) {
           timerCompleted();
           clearInterval(timer);
         }
